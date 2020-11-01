@@ -48,13 +48,12 @@ contains
     integer, allocatable, intent(out) :: first(:)
     integer, allocatable, intent(out) :: last(:)
 
-    character :: set_array(len(set)), string_array(len(string))
+    character :: set_array(len(set))
     logical, dimension(len(string)) :: is_first, is_last, is_separator
     integer :: n, slen
 
     slen = len(string)
 
-    string_array = strarr(string)
     set_array = strarr(set)
     is_separator = [(any(string(n:n) == set_array), n = 1, slen)]
 
