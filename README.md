@@ -3,6 +3,10 @@
 A Fortran implementation of the Fortran 202X `split` intrinsic subroutine.
 Candidate for inclusion in fortran-lang/stdlib.
 
+`split` is defined in Section 16.1.194 of
+[20-007](https://j3-fortran.org/doc/year/20/20-007.pdf) with corrections in
+[20-139](https://j3-fortran.org/doc/year/20/20-139.txt).
+
 ## Getting started
 
 ```
