@@ -1,0 +1,6 @@
+name = "fortran202x_split"
+version = "0.1.0"
+license = "MIT"
+author = "Milan Curcic"
+maintainer = "milancurcic@hey.com"
+copyright = "2020 Milan Curcic"
