@@ -7,6 +7,12 @@ Candidate for inclusion in fortran-lang/stdlib.
 [20-007](https://j3-fortran.org/doc/year/20/20-007.pdf) with corrections in
 [20-139](https://j3-fortran.org/doc/year/20/20-139.txt).
 
+Tested with:
+
+* gfortran 8.3.0, 9.2.0
+* ifort 2021.1 beta
+* xlf 16.1.1
+
 ## Getting started
 
 ```
