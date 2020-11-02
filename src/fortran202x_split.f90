@@ -28,12 +28,14 @@ contains
     do concurrent (n = 1:size(tokens))
       tokens(n) = string(first(n):last(n))
     end do
+    ! The above do-block could be replaced with an array constructor below,
+    ! however it ICEs with gfortran-9.2.0.
+    ! It compiles and runs correctly with ifort (IFORT) 2021.1 beta.
+    !tokens = [(string(first(n):last(n)), n = 1, size(tokens))]
 
     if (present(separator)) then
       allocate(separator(size(tokens) - 1))
-      do concurrent (n = 1:size(tokens) - 1)
-        separator(n) = string(first(n+1)-1:first(n+1)-1)
-      end do
+      separator = [(string(first(n+1)-1:first(n+1)-1), n = 1, size(tokens) - 1)]
     end if
 
   end subroutine split_tokens
