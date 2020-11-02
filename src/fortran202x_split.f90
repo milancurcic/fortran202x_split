@@ -54,7 +54,7 @@ contains
 
     slen = len(string)
 
-    set_array = strarr(set)
+    set_array = [(set(n:n), n = 1, len(set))]
     is_separator = [(any(string(n:n) == set_array), n = 1, slen)]
 
     is_first = .false.
@@ -101,7 +101,7 @@ contains
     backward = .false.
     if (present(back)) backward = back
 
-    set_array = strarr(set)
+    set_array = [(set(n:n), n = 1, len(set))]
 
     if (backward) then
       result_pos = 0
@@ -124,16 +124,5 @@ contains
     pos = result_pos
 
   end subroutine split_pos
-
-
-  pure function strarr(string) result(array)
-    !! Returns an input string as an array of characters.
-    character(*), intent(in) :: string
-    character :: array(len(string))
-    integer :: n
-    do concurrent(n = 1:len(string))
-      array(n) = string(n:n)
-    end do
-  end function strarr
 
 end module fortran202x_split
