@@ -3,7 +3,7 @@ module fortran202x_split
   implicit none
 
   private
-  public :: split
+  public :: split, string_tokens
 
   interface split
     module procedure :: split_tokens, split_first_last, split_pos
@@ -126,5 +126,14 @@ contains
     pos = result_pos
 
   end subroutine split_pos
+
+
+  pure function string_tokens(string, set) result(tokens)
+    !! Splits a string into tokens using characters in set as token delimiters.
+    character(*), intent(in) :: string
+    character(*), intent(in) :: set
+    character(:), allocatable :: tokens(:)
+    call split_tokens(string, set, tokens)
+  end function string_tokens
 
 end module fortran202x_split
