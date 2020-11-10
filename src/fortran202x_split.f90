@@ -28,14 +28,12 @@ contains
     do concurrent (n = 1:size(tokens))
       tokens(n) = string(first(n):last(n))
     end do
-    ! The above do-block could be replaced with an array constructor below,
-    ! however it ICEs with gfortran-9.2.0.
-    ! It compiles and runs correctly with ifort (IFORT) 2021.1 beta.
-    !tokens = [(string(first(n):last(n)), n = 1, size(tokens))]
 
     if (present(separator)) then
       allocate(separator(size(tokens) - 1))
-      separator = [(string(first(n+1)-1:first(n+1)-1), n = 1, size(tokens) - 1)]
+      do concurrent (n = 1:size(tokens) - 1)
+        separator(n) = string(first(n+1)-1:first(n+1)-1)
+      end do
     end if
 
   end subroutine split_tokens
@@ -56,8 +54,13 @@ contains
 
     slen = len(string)
 
-    set_array = [(set(n:n), n = 1, len(set))]
-    is_separator = [(any(string(n:n) == set_array), n = 1, slen)]
+    do concurrent (n = 1:len(set))
+      set_array(n) = set(n:n)
+    end do
+
+    do concurrent (n = 1:slen)
+      is_separator(n) = any(string(n:n) == set_array)
+    end do
 
     is_first = .false.
     is_last = .false.
@@ -103,7 +106,9 @@ contains
     backward = .false.
     if (present(back)) backward = back
 
-    set_array = [(set(n:n), n = 1, len(set))]
+    do concurrent (n = 1:len(set))
+      set_array(n) = set(n:n)
+    end do
 
     if (backward) then
       result_pos = 0
