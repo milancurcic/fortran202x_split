@@ -30,8 +30,8 @@ program bench
     elapsed = [elapsed, t2 - t1]
     deallocate(tokens)
   end do
-  print *, 'split subroutine, elapsed', &
-           sum(elapsed) / size(elapsed), 'seconds'
+  print *, 'split subroutine, elapsed seconds:       ', &
+           'mean = ', mean(elapsed), 'std = ', std(elapsed)
 
   elapsed = [real ::]
   do n = 1, 5
@@ -41,7 +41,19 @@ program bench
     elapsed = [elapsed, t2 - t1]
     deallocate(tokens)
   end do
-  print *, 'string_tokens function, elapsed', &
-           sum(elapsed) / size(elapsed), 'seconds'
+  print *, 'string_tokens function, elapsed seconds: ', &
+           'mean = ', mean(elapsed), 'std = ', std(elapsed)
+
+contains
+
+  pure real function mean(x)
+    real, intent(in) :: x(:)
+    mean = sum(x) / size(x)
+  end function mean
+
+  pure real function std(x)
+    real, intent(in) :: x(:)
+    std = sqrt(mean((x - mean(x))**2))
+  end function std
 
 end program bench
