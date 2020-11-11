@@ -29,9 +29,22 @@ fpm build
 fpm test
 ```
 
+Run the benchmark program:
+
+```
+fpm run
+```
+
 ### Without fpm
 
 ```
 gfortran src/fortran202x_split.f90 test/main.f90 -o test_split
 ./test_split
-``` 
+```
+
+Run the benchmark program:
+
+```
+gfortran src/fortran202x_split.f90 app/main.f90 -o bench
+./bench
+```
