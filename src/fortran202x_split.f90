@@ -98,8 +98,7 @@ contains
     logical, intent(in), optional :: back
 
     logical :: backward
-    character :: set_array(len(set))
-    integer :: n, result_pos
+    integer :: result_pos
 
     !TODO use optval when implemented in stdlib
     !backward = optval(back, .false.)
