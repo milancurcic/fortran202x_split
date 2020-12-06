@@ -43,4 +43,15 @@ program test_split
     print '(t7, a)', string(istart:iend)
   end do
 
+  print *
+  print *, 'Example 3 (back=.true.):'
+
+  do
+    if (p <= 0) exit
+    iend = p - 1
+    call split(string, set, p, back=.true.)
+    istart = p + 1
+    print '(t7, a)', string(istart:iend)
+  end do
+
 end program test_split

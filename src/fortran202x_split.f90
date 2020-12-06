@@ -106,26 +106,11 @@ contains
     backward = .false.
     if (present(back)) backward = back
 
-    do concurrent (n = 1:len(set))
-      set_array(n) = set(n:n)
-    end do
-
     if (backward) then
-      result_pos = 0
-      do n = pos - 1, 1, -1
-        if (any(string(n:n) == set_array)) then
-          result_pos = n
-          exit
-        end if
-      end do
+      result_pos = scan(string(:pos-1), set, back=.true.)
     else
-      result_pos = len(string) + 1
-      do n = pos + 1, len(string)
-        if (any(string(n:n) == set_array)) then
-          result_pos = n
-          exit
-        end if
-      end do
+      result_pos = scan(string(pos+1:), set) + pos
+      if (result_pos < pos+1) result_pos = len(string) + 1
     end if
 
     pos = result_pos
