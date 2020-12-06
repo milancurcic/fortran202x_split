@@ -106,9 +106,9 @@ contains
     if (present(back)) backward = back
 
     if (backward) then
-      result_pos = scan(string(:pos-1), set, back=.true.)
+      result_pos = scan(string(:max(pos-1, 1)), set, back=.true.)
     else
-      result_pos = scan(string(pos+1:), set) + pos
+      result_pos = scan(string(min(pos+1, len(string)):), set) + pos
       if (result_pos < pos+1) result_pos = len(string) + 1
     end if
 

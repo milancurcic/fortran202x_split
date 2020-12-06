@@ -43,6 +43,9 @@ program test_split
     print '(t7, a)', string(istart:iend)
   end do
 
+  ! Try to go out-of-bounds
+  call split(string, set, p)
+
   print *
   print *, 'Example 3 (back=.true.):'
 
@@ -53,5 +56,8 @@ program test_split
     istart = p + 1
     print '(t7, a)', string(istart:iend)
   end do
+
+  ! Try to go out-of-bounds
+  call split(string, set, p, back=.true.)
 
 end program test_split
