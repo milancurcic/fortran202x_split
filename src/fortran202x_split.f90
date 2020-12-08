@@ -6,7 +6,7 @@ module fortran202x_split
   public :: split, string_tokens
 
   interface split
-    module procedure :: split_tokens, split_first_last, split_pos
+    module procedure :: split_tokens, split_first_last_v1, split_pos
   end interface split
 
 contains
@@ -39,7 +39,7 @@ contains
   end subroutine split_tokens
 
 
-  pure subroutine split_first_last(string, set, first, last)
+  pure subroutine split_first_last_v1(string, set, first, last)
     !! Computes the first and last indices of tokens in input string, delimited
     !! by the characters in set, and stores them into first and last output
     !! arrays.
@@ -48,27 +48,94 @@ contains
     integer, allocatable, intent(out) :: first(:)
     integer, allocatable, intent(out) :: last(:)
 
-    integer, dimension(len(string)+1) :: istart, iend
-    integer :: p, n, slen
+    logical, dimension(0:len(string)+1) :: is_first, is_last, is_separator
+    integer :: n, slen
 
     slen = len(string)
 
+    is_separator(0) = .true.
+    do concurrent (n = 1:slen)
+      is_separator(n) = index(set,string(n:n)) > 0
+    end do
+    is_separator(slen+1) = .true.
+
+    is_separator = [.true., (index(set,string(n:n)) > 0, n=1,slen), .true.]
+
+    is_first = cshift(is_separator,-1)
+    is_last = cshift(is_separator,1)
+
+    first = pack([(n, n = 1, slen+1)], is_first(1:slen+1))
+    last = pack([(n, n = 0, slen)], is_last(0:slen))
+
+  end subroutine split_first_last_v1
+
+
+  pure subroutine split_first_last_v2(string, set, first, last)
+    !! Computes the first and last indices of tokens in input string, delimited
+    !! by the characters in set, and stores them into first and last output
+    !! arrays.
+    character(*), intent(in) :: string
+    character(*), intent(in) :: set
+    integer, allocatable, intent(out) :: first(:)
+    integer, allocatable, intent(out) :: last(:)
+
+    logical, dimension(0:len(string)+1) :: is_separator
+    integer :: n, slen
+
+    slen = len(string)
+    is_separator = [.true., (index(set,string(n:n)) > 0, n=1,slen), .true.]
+    first = pack([(n, n = 1, slen+1)], is_separator(0:slen))
+    last = pack([(n, n = 0, slen)], is_separator(1:slen+1))
+  end subroutine split_first_last_v2
+
+
+  pure subroutine split_first_last_v3(string, set, first, last)
+    !! Computes the first and last indices of tokens in input string, delimited
+    !! by the characters in set, and stores them into first and last output
+    !! arrays.
+    character(*), intent(in) :: string
+    character(*), intent(in) :: set
+    integer, allocatable, intent(out) :: first(:)
+    integer, allocatable, intent(out) :: last(:)
+
+    logical, dimension(0:len(string)+1) :: is_separator
+    integer :: n, slen, i, p, q, pos
+
+    slen = len(string)
+
+    is_separator = .false.
+    is_separator(0) = .true.
+    is_separator(slen+1) = .true.
+
     n = 0
     if (slen > 0) then
-      p = 0
+      p = 1
       do while(p < slen)
         n = n+1
-        istart(n) = min(p + 1, slen)
-        call split(string, set, p)
-        iend(n) = p - 1
+        pos = scan(string(p:),set)
+        if (pos == 0) exit
+        is_separator(p + pos - 1) = .true.
+        p = p + pos
       end do
     end if
 
-    first = istart(:n)
-    last = iend(:n)
+    allocate(first(n),last(n))
+    p = 0
+    q = 0
+    outer: do i = 1, n
+      inner: do
+        p = p + 1
+        if (is_separator(p-1)) exit inner
+      end do inner
+      first(i) = p
+      inner2: do
+        q = q + 1
+        if (is_separator(q)) exit inner2
+      end do inner2
+      last(i) = q-1      
+    end do outer
 
-  end subroutine split_first_last
-
+  end subroutine split_first_last_v3
 
   pure subroutine split_pos(string, set, pos, back)
     !! If back is absent, computes the leftmost token delimiter in string whose
