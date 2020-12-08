@@ -22,27 +22,32 @@ program bench
   end do
   1 close(u)
 
+  print *, 'Running split subroutine...'
   elapsed = [real ::]
-  do n = 1, 5
+  do n = 1, 10
     call cpu_time(t1)
     call split(string, ' ', tokens)
     call cpu_time(t2)
+    print '(a,i2,a,f9.7,a)', '  Run ', n, ': ', t2 - t1, ' seconds elapsed'
     elapsed = [elapsed, t2 - t1]
     deallocate(tokens)
   end do
-  print *, 'split subroutine, elapsed seconds:       ', &
-           'mean = ', mean(elapsed), 'std = ', std(elapsed)
+  print '(80("-"))'
+  print '(2(a,f9.7))', 'split subroutine, seconds elapsed: ', mean(elapsed), ' +/- ', std(elapsed)
 
+  print *
+  print *, 'Running string_tokens function...'
   elapsed = [real ::]
-  do n = 1, 5
+  do n = 1, 10
     call cpu_time(t1)
     tokens = string_tokens(string, ' ')
     call cpu_time(t2)
+    print '(a,i2,a,f9.7,a)', '  Run ', n, ': ', t2 - t1, ' seconds elapsed'
     elapsed = [elapsed, t2 - t1]
     deallocate(tokens)
   end do
-  print *, 'string_tokens function, elapsed seconds: ', &
-           'mean = ', mean(elapsed), 'std = ', std(elapsed)
+  print '(80("-"))'
+  print '(2(a,f9.7))', 'string_tokens function, seconds elapsed: ', mean(elapsed), ' +/- ', std(elapsed)
 
 contains
 
