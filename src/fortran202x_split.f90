@@ -57,7 +57,7 @@ contains
     if (slen > 0) then
       p = 0
       do while(p < slen)
-        n = n+1
+        n = n + 1
         istart(n) = min(p + 1, slen)
         call split(string, set, p)
         iend(n) = p - 1
