@@ -23,8 +23,8 @@ program test_split
   end do
 
   print *
-  print *, 'Example 2:'
   string = 'first,second,,forth'
+  print *, 'Example 2: "', string, '"'
   set = ',;'
   call split(string, set, first, last)
   print *, 'first =', first
@@ -51,7 +51,7 @@ program test_split
 
   do
     if (p <= 0) exit
-    iend = p - 1
+    iend = min(p - 1, len(string))
     call split(string, set, p, back=.true.)
     istart = p + 1
     print '(t7, a)', string(istart:iend)
@@ -59,5 +59,21 @@ program test_split
 
   ! Try to go out-of-bounds
   call split(string, set, p, back=.true.)
+
+  print *
+  string = ',;,;,;,;,'
+  print *, 'Example 4: "', string, '"'
+  set = ',;'
+  call split(string, set, first, last)
+  print *, 'first =', first
+  print *, 'last =', last
+
+  print *
+  string = ''
+  print *, 'Example 5: "', string, '"'
+  set = ',;'
+  call split(string, set, first, last)
+  print *, 'size(first) =', size(first)
+  print *, 'size(last) =', size(last)
 
 end program test_split

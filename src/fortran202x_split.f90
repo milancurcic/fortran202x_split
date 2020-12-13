@@ -48,41 +48,24 @@ contains
     integer, allocatable, intent(out) :: first(:)
     integer, allocatable, intent(out) :: last(:)
 
-    character :: set_array(len(set))
-    logical, dimension(len(string)) :: is_first, is_last, is_separator
-    integer :: n, slen
+    integer, dimension(len(string)+1) :: istart, iend
+    integer :: p, n, slen
 
     slen = len(string)
 
-    do concurrent (n = 1:len(set))
-      set_array(n) = set(n:n)
-    end do
+    n = 0
+    if (slen > 0) then
+      p = 0
+      do while(p < slen)
+        n = n + 1
+        istart(n) = min(p + 1, slen)
+        call split(string, set, p)
+        iend(n) = p - 1
+      end do
+    end if
 
-    do concurrent (n = 1:slen)
-      is_separator(n) = any(string(n:n) == set_array)
-    end do
-
-    is_first = .false.
-    is_last = .false.
-
-    if (.not. is_separator(1)) is_first(1) = .true.
-
-    do concurrent (n = 2:slen-1)
-      if (.not. is_separator(n)) then
-        if (is_separator(n - 1)) is_first(n) = .true.
-        if (is_separator(n + 1)) is_last(n) = .true.
-      else
-        if (is_separator(n - 1)) then
-          is_first(n) = .true.
-          is_last(n-1) = .true.
-        end if
-      end if
-    end do
-
-    if (.not. is_separator(slen)) is_last(slen) = .true.
-
-    first = pack([(n, n = 1, slen)], is_first)
-    last = pack([(n, n = 1, slen)], is_last)
+    first = istart(:n)
+    last = iend(:n)
 
   end subroutine split_first_last
 
@@ -98,7 +81,12 @@ contains
     logical, intent(in), optional :: back
 
     logical :: backward
-    integer :: result_pos
+    integer :: result_pos, bound
+
+    if (len(string) == 0) then
+      pos = 1
+      return
+    end if
 
     !TODO use optval when implemented in stdlib
     !backward = optval(back, .false.)
@@ -106,7 +94,8 @@ contains
     if (present(back)) backward = back
 
     if (backward) then
-      result_pos = scan(string(:max(pos-1, 1)), set, back=.true.)
+      bound = min(len(string), max(pos-1, 0))
+      result_pos = scan(string(:bound), set, back=.true.)
     else
       result_pos = scan(string(min(pos+1, len(string)):), set) + pos
       if (result_pos < pos+1) result_pos = len(string) + 1
